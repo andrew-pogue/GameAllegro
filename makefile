@@ -1,6 +1,6 @@
 OS := windows
-IDIR := ./include C:/Libraries/MinGW/Allegro/include
-LDIR := ./lib C:/Libraries/MinGW/Allegro/lib
+IDIR := ./include D:/Libraries/MinGW/Allegro/include
+LDIR := ./lib D:/Libraries/MinGW/Allegro/lib
 SDIR := ./src
 BDIR := ./build
 TARGET := hello_allegro
