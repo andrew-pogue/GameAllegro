@@ -1,51 +1,59 @@
 #include "game.hpp"
 
-Game::Game() {
-    if (DEBUG) {
-        std::cout << "Game::Game() called\n";
-    }
+bool Game::init_allegro() {
+    if (DEBUG) { printf("Game::init_allegro() called\n"); }
 
     if (!al_init()) {
-        throw "Error: Couldn't initialize Allegro.";
+        printf("Error: failed to initialize Allegro.\n");
+        return false;
     }
 
     if (!al_init_font_addon()) { 
-        throw "Error: Couldn't initialize Allegro font addon.";
+        printf("Error: failed to initialize Allegro font addon.\n");
+        return false;
     }
 
     if (!al_install_keyboard()) { 
-        throw "Error: Couldn't initialize Allegro keyboard addon."; 
+        printf("Error: failed to install keyboard.\n");
+        return false;
     }
 
-    this->font = al_create_builtin_font();
-    if (!this->font) {
-        throw "Error: Couldn't create font."; 
+    if (!al_install_mouse()) { 
+        printf("Error: failed to install mouse.\n");
+        return false;
     }
 
     this->display = al_create_display(640, 480);
     if (!this->display) {
-        throw "Error: Couldn't create display.";
+        throw "Error: failed to create display.";
     }
 
     this->event_queue = al_create_event_queue();
     if (!this->event_queue) {
-        throw "Error: Couldn't create event queue."; 
+        throw "Error: failed to create event queue."; 
     }
 
     this->frame_timer = al_create_timer(1.0 / 30.0);
     if (!this->frame_timer) {
-        throw "Error: Couldn't create timer."; 
+        throw "Error: failed to create timer."; 
     }
 
     al_register_event_source(this->event_queue, al_get_keyboard_event_source());
     al_register_event_source(this->event_queue, al_get_display_event_source(this->display));
     al_register_event_source(this->event_queue, al_get_timer_event_source(this->frame_timer));
+
+    return true;
+}
+
+Game::Game() {
+    if (DEBUG) { printf("Game::Game() called\n"); }
+    if (!this->init_allegro())
+        throw "Error: failed to construct Game!";
+    this->load_entities();
 }
 
 void Game::play() {
-    if (DEBUG) {
-        std::cout << "Game::play() called\n";
-    }
+    if (DEBUG) { printf("Game::play() called\n"); }
 
     bool play = true, redraw = true;
     ALLEGRO_EVENT event;
@@ -62,22 +70,43 @@ void Game::play() {
             break;
         }
 
+        this->update();
+
         if (redraw && al_is_event_queue_empty(this->event_queue)) {
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_text(this->font, al_map_rgb(255, 255, 255), 320, 240, 0, "Hello world!");
-            al_flip_display();
+            this->render();
             redraw = false;
         }
     }
 }
 
 Game::~Game() {
-    if (DEBUG) {
-        std::cout << "Game::~Game() called\n";
+    if (DEBUG) { printf("Game::~Game() called\n"); }
+
+    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
+        delete (*it);
     }
 
-    al_destroy_font(this->font);
     al_destroy_timer(this->frame_timer);
     al_destroy_event_queue(this->event_queue);
     al_destroy_display(this->display);
+}
+
+void Game::update() {
+    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
+        (*it)->update();
+    }
+}
+
+void Game::render() {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
+        (*it)->render();
+    }
+    
+    al_flip_display();
+}
+
+void Game::load_entities() {
+    this->entities.push_back(new Text("Hello World!", 10, 10));
+    this->entities.push_back(new Text("Allegro is cool!", 70, 70));
 }
