@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <string>
 
-#include "entity.hpp"
+#include "prop.hpp"
 
-struct Text : Entity {
+struct Text : Prop {
     void render() const;
-    void update();
+    void transform();
 
     std::string string;
     ALLEGRO_FONT* font;

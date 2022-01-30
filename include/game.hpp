@@ -4,7 +4,8 @@
 #include <allegro5/allegro_font.h>
 #include <list>
 
-#include "entity.hpp"
+#include "actor.hpp"
+#include "prop.hpp"
 #include "text.hpp"
 
 const bool DEBUG = true;
@@ -14,9 +15,10 @@ private:
     ALLEGRO_DISPLAY* display;
     ALLEGRO_EVENT_QUEUE* event_queue;
     ALLEGRO_TIMER* frame_timer;
-    std::list<Entity*> entities;
+    std::list<Actor*> actors;
+    std::list<Prop*> independent_props;
 
-    void load_entities();
+    void load();
     bool init_allegro();
     void update();
     void render();
@@ -28,3 +30,5 @@ public:
     ~Game();
     void play();
 };
+
+// transform class?

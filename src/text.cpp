@@ -60,6 +60,6 @@ void Text::render() const {
         this->x, this->y, 0, this->string.c_str());
 }
 
-void Text::update() {
+void Text::transform() {
     
 }

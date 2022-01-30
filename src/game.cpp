@@ -49,7 +49,7 @@ Game::Game() {
     if (DEBUG) { printf("Game::Game() called\n"); }
     if (!this->init_allegro())
         throw "Error: failed to construct Game!";
-    this->load_entities();
+    this->load();
 }
 
 void Game::play() {
@@ -82,7 +82,7 @@ void Game::play() {
 Game::~Game() {
     if (DEBUG) { printf("Game::~Game() called\n"); }
 
-    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
+    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
         delete (*it);
     }
 
@@ -92,21 +92,34 @@ Game::~Game() {
 }
 
 void Game::update() {
-    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
-        (*it)->update();
+    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
+        (*it)->act();
+    }
+
+    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
+        (*it)->transform();
+    }
+
+    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
+        (*it)->transform();
     }
 }
 
 void Game::render() {
     al_clear_to_color(al_map_rgb(0, 0, 0));
-    for (auto it = this->entities.begin(); it != this->entities.end(); it++) {
+    
+    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
+        (*it)->render();
+    }
+
+    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
         (*it)->render();
     }
     
     al_flip_display();
 }
 
-void Game::load_entities() {
-    this->entities.push_back(new Text("Hello World!", 10, 10));
-    this->entities.push_back(new Text("Allegro is cool!", 70, 70));
+void Game::load() {
+    this->independent_props.push_back(new Text("Hello World!", 10, 10));
+    this->independent_props.push_back(new Text("Allegro is cool!", 70, 70));
 }
