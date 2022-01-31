@@ -6,9 +6,9 @@
 
 #include "actor.hpp"
 #include "prop.hpp"
-#include "text.hpp"
 
-const bool DEBUG = true;
+#include "text.hpp"
+#include "player.hpp"
 
 class Game {
 private:
@@ -17,12 +17,13 @@ private:
     ALLEGRO_TIMER* frame_timer;
     std::list<Actor*> actors;
     std::list<Prop*> independent_props;
+    Player player;
 
     void load();
     bool init_allegro();
     void update();
     void render();
-    void handle_input();
+    void handle_input(ALLEGRO_EVENT);
     void handle_timers();
     void handle_commands();
 public:

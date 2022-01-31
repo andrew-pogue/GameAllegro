@@ -23,7 +23,7 @@ bool Game::init_allegro() {
         return false;
     }
 
-    this->display = al_create_display(640, 480);
+    this->display = al_create_display(WINDOW_WIDTH, WINDOW_HEIGHT);
     if (!this->display) {
         throw "Error: failed to create display.";
     }
@@ -45,7 +45,7 @@ bool Game::init_allegro() {
     return true;
 }
 
-Game::Game() {
+Game::Game() : player(0, 0, 0) {
     if (DEBUG) { printf("Game::Game() called\n"); }
     if (!this->init_allegro())
         throw "Error: failed to construct Game!";
@@ -65,6 +65,8 @@ void Game::play() {
             redraw = true;
             break;
         case ALLEGRO_EVENT_KEY_DOWN:
+            handle_input(event);
+            break;
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             play = false;
             break;
@@ -95,26 +97,20 @@ void Game::update() {
     for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
         (*it)->act();
     }
-
-    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
-        (*it)->transform();
-    }
-
-    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
-        (*it)->transform();
-    }
 }
 
 void Game::render() {
     al_clear_to_color(al_map_rgb(0, 0, 0));
     
+    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
+        (*it)->render();
+    }
+
     for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
         (*it)->render();
     }
 
-    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
-        (*it)->render();
-    }
+    player.render();
     
     al_flip_display();
 }
@@ -122,4 +118,18 @@ void Game::render() {
 void Game::load() {
     this->independent_props.push_back(new Text("Hello World!", 10, 10));
     this->independent_props.push_back(new Text("Allegro is cool!", 70, 70));
+}
+
+void Game::handle_input(ALLEGRO_EVENT event) {
+    ALLEGRO_KEYBOARD_STATE* keyboard = NULL;
+    al_get_keyboard_state(keyboard);
+    if (al_key_down(keyboard, ALLEGRO_KEY_UP)) {
+        this->player.move(Direction(1,0,0,0));
+    } if (al_key_down(keyboard, ALLEGRO_KEY_DOWN)) {
+        this->player.move(Direction(0,1,0,0));
+    } if (al_key_down(keyboard, ALLEGRO_KEY_LEFT)) {
+        this->player.move(Direction(0,0,0,1));
+    } if (al_key_down(keyboard, ALLEGRO_KEY_RIGHT)) {
+        this->player.move(Direction(0,0,1,0));
+    }
 }
