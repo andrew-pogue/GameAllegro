@@ -3,7 +3,7 @@ IDIR := ./include D:/Libraries/MinGW/Allegro/include
 LDIR := ./lib D:/Libraries/MinGW/Allegro/lib
 SDIR := ./src
 BDIR := ./build
-TARGET := hello_allegro
+TARGET := game
 
 CC := gcc
 CXX := g++

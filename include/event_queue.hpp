@@ -10,7 +10,7 @@ struct EventQueue {
 
     void register_event_source(ALLEGRO_EVENT_SOURCE*);
     void register_event_source(ALLEGRO_DISPLAY*);
-    void EventQueue::register_event_source(ALLEGRO_TIMER*);
+    void register_event_source(ALLEGRO_TIMER*);
 
     // implicit type conversion
     operator ALLEGRO_EVENT_QUEUE*()

@@ -20,20 +20,15 @@ const int WINDOW_HEIGHT = 480;
 class Game {
 private:
     Display display;
-    EventQueue event_queue;
     Timer frame_timer;
+    EventQueue event_queue;
     
+    Player player;
     std::list<Actor*> actors;
     std::list<Prop*> independent_props;
-    Player player;
 
     void load();
-    
-    /**
-     * Initializes Allegro core and subsystems and installs input devices.
-     * Should only happen once, even with multiple Game objects.
-     **/
-    bool init();
+
     static inline bool is_init = false;
 
     void update();
@@ -43,6 +38,12 @@ private:
     void handle_timers();
     void handle_commands();
 public:
+    /**
+     * Initializes Allegro core and subsystems and installs input devices.
+     * Should only happen once, even with multiple Game objects.
+     **/
+    static bool init();
+
     Game();
     ~Game();
     void play();

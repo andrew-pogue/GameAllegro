@@ -13,6 +13,6 @@ struct Text : Prop {
     ALLEGRO_FONT* font;
     ALLEGRO_COLOR color;
 
-    Text(std::string s, int x, int y);
+    Text(std::string, int, int);
     ~Text();
 };

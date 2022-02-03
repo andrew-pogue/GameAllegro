@@ -1,8 +1,14 @@
 #include <allegro5/allegro.h>
+#include <stdio.h>
 #include "game.hpp"
 
 int main (int argc, char **argv) {
     Game* game;
+
+    if (!Game::init()) {
+        printf("Error: failed to initialize Allegro!\n");
+        return 1;
+    }
 
     try {
         game = new Game();
