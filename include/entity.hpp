@@ -1,6 +1,5 @@
 #pragma once
 
-const bool DEBUG = true;
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
 

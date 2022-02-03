@@ -1,0 +1,6 @@
+lazy loading with std::optional<T>
+
+concurrency:
+    thread for player input
+    thread for updating game logic
+    thread for rendering

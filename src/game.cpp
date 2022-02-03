@@ -1,5 +1,7 @@
 #include "game.hpp"
 
+static const bool DEBUG = false;
+
 bool Game::init_allegro() {
     if (DEBUG) { printf("Game::init_allegro() called\n"); }
 
@@ -21,11 +23,6 @@ bool Game::init_allegro() {
     if (!al_install_mouse()) { 
         printf("Error: failed to install mouse.\n");
         return false;
-    }
-
-    this->display = al_create_display(WINDOW_WIDTH, WINDOW_HEIGHT);
-    if (!this->display) {
-        throw "Error: failed to create display.";
     }
 
     this->event_queue = al_create_event_queue();
@@ -90,7 +87,6 @@ Game::~Game() {
 
     al_destroy_timer(this->frame_timer);
     al_destroy_event_queue(this->event_queue);
-    al_destroy_display(this->display);
 }
 
 void Game::update() {
