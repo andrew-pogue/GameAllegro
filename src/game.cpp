@@ -2,8 +2,8 @@
 
 static const bool DEBUG = false;
 
-bool Game::init_allegro() {
-    if (DEBUG) { printf("Game::init_allegro() called\n"); }
+bool Game::init() {
+    if (DEBUG) printf("Game::init()\n");
 
     if (!al_init()) {
         printf("Error: failed to initialize Allegro.\n");
@@ -25,27 +25,25 @@ bool Game::init_allegro() {
         return false;
     }
 
-    this->event_queue = al_create_event_queue();
-    if (!this->event_queue) {
-        throw "Error: failed to create event queue."; 
-    }
-
-    this->frame_timer = al_create_timer(1.0 / 30.0);
-    if (!this->frame_timer) {
-        throw "Error: failed to create timer."; 
-    }
-
-    al_register_event_source(this->event_queue, al_get_keyboard_event_source());
-    al_register_event_source(this->event_queue, al_get_display_event_source(this->display));
-    al_register_event_source(this->event_queue, al_get_timer_event_source(this->frame_timer));
-
+    this->is_init = true;
     return true;
 }
 
-Game::Game() : player(0, 0, 0) {
-    if (DEBUG) { printf("Game::Game() called\n"); }
-    if (!this->init_allegro())
-        throw "Error: failed to construct Game!";
+Game::Game()
+    : frame_timer(1.0 / 30.0), event_queue(), display(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 0),
+        player(0, 0, 0), actors(), independent_props()
+{
+    if (DEBUG) printf("Game::Game()\n");
+
+    if (!this->is_init) {
+        if (!this->init()) {
+            throw "Error: failed to construct Game!";
+        }
+    }
+
+    this->event_queue.register_event_source(al_get_keyboard_event_source());
+    this->event_queue.register_event_source(this->display);
+    this->event_queue.register_event_source(this->frame_timer);
     this->load();
 }
 
@@ -84,9 +82,6 @@ Game::~Game() {
     for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
         delete (*it);
     }
-
-    al_destroy_timer(this->frame_timer);
-    al_destroy_event_queue(this->event_queue);
 }
 
 void Game::update() {
