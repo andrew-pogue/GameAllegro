@@ -7,6 +7,7 @@ int main (int argc, char **argv) {
 
     if (!Game::init()) {
         printf("Error: failed to initialize Allegro!\n");
+        delete game;
         return 1;
     }
 
