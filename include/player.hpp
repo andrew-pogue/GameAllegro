@@ -1,8 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_font.h>
 #include "actor.hpp"
+#include "alcpp_font.hpp"
 
 class Player : Actor {
 public:
@@ -13,6 +13,6 @@ public:
     void move(Direction);
 private:
     char c;
-    ALLEGRO_FONT* font;
+    Font font;
     ALLEGRO_COLOR color;
 };

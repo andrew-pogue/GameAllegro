@@ -1,9 +1,10 @@
 #pragma once
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include "alcpp_init.hpp"
 
 // Wrapper for ALLEGRO_DISPLAY
-struct Display {
+struct Display : Init {
     // Assumes that the Allegro core library was already initialized.
     Display(int, int, int, int, int);
     ~Display();

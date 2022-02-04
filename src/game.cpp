@@ -2,34 +2,6 @@
 
 static const bool DEBUG = true;
 
-bool Game::init() {
-    if (DEBUG) printf("Game::init()\n");
-    if (Game::is_init) return true;
-
-    if (!al_init()) {
-        printf("Error: failed to initialize Allegro.\n");
-        return false;
-    }
-
-    if (!al_init_font_addon()) { 
-        printf("Error: failed to initialize Allegro font addon.\n");
-        return false;
-    }
-
-    if (!al_install_keyboard()) { 
-        printf("Error: failed to install keyboard.\n");
-        return false;
-    }
-
-    if (!al_install_mouse()) { 
-        printf("Error: failed to install mouse.\n");
-        return false;
-    }
-
-    Game::is_init = true;
-    return true;
-}
-
 Game::Game()
     : display(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 0), frame_timer(1.0 / 30.0), event_queue(),
         player(0, 0, 0), actors(), independent_props()
@@ -39,6 +11,14 @@ Game::Game()
     this->event_queue.register_event_source(this->display);
     this->event_queue.register_event_source(this->frame_timer);
     this->load();
+}
+
+Game::~Game() {
+    if (DEBUG) { printf("Game::~Game()\n"); }
+
+    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
+        delete (*it);
+    }
 }
 
 void Game::play() {
@@ -53,9 +33,9 @@ void Game::play() {
         case ALLEGRO_EVENT_TIMER:
             redraw = true;
             break;
-        // case ALLEGRO_EVENT_KEY_DOWN:
-        //     handle_input(event);
-        //     break;
+        case ALLEGRO_EVENT_KEY_DOWN:
+            //handle_input(event);
+            break;
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             play = false;
             break;
@@ -67,14 +47,6 @@ void Game::play() {
             this->render();
             redraw = false;
         }
-    }
-}
-
-Game::~Game() {
-    if (DEBUG) { printf("Game::~Game()\n"); }
-
-    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
-        delete (*it);
     }
 }
 
@@ -111,7 +83,7 @@ void Game::load() {
 
 void Game::handle_input(ALLEGRO_EVENT event) {
     if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
-    ALLEGRO_KEYBOARD_STATE* keyboard = NULL;
+    ALLEGRO_KEYBOARD_STATE* keyboard = nullptr;
     al_get_keyboard_state(keyboard);
     if (al_key_down(keyboard, ALLEGRO_KEY_UP)) {
         this->player.move(Direction(1,0,0,0));

@@ -1,9 +1,10 @@
 #pragma once
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include "alcpp_init.hpp"
 
 // Wrapper for ALLEGRO_TIMER
-struct Timer {
+struct Timer : Init {
     Timer(double);
     ~Timer();
 

@@ -1,9 +1,10 @@
 #pragma once
 #include <stdio.h>
 #include <allegro5/allegro.h>
+#include "alcpp_init.hpp"
 
 // Wrapper for ALLEGRO_EVENT_QUEUE
-struct EventQueue {
+struct EventQueue : Init {
     // Assumes that the Allegro core library was already initialized.
     EventQueue();
     ~EventQueue();

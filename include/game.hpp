@@ -7,9 +7,9 @@
 #include "actor.hpp"
 #include "prop.hpp"
 
-#include "display.hpp"
-#include "event_queue.hpp"
-#include "timer.hpp"
+#include "alcpp_display.hpp"
+#include "alcpp_event_queue.hpp"
+#include "alcpp_timer.hpp"
 
 #include "text.hpp"
 #include "player.hpp"
@@ -28,9 +28,6 @@ private:
     std::list<Prop*> independent_props;
 
     void load();
-
-    static inline bool is_init = false;
-
     void update();
     void render();
     
@@ -38,15 +35,7 @@ private:
     void handle_timers();
     void handle_commands();
 public:
-    /**
-     * Initializes Allegro core and subsystems and installs input devices.
-     * Should only happen once, even with multiple Game objects.
-     **/
-    static bool init();
-
     Game();
     ~Game();
     void play();
 };
-
-// transform class?

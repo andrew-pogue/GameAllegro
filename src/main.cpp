@@ -5,12 +5,6 @@
 int main (int argc, char **argv) {
     Game* game;
 
-    if (!Game::init()) {
-        printf("Error: failed to initialize Allegro!\n");
-        delete game;
-        return 1;
-    }
-
     try {
         game = new Game();
         game->play();
