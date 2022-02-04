@@ -19,22 +19,47 @@ Game::~Game() {
     for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
         delete (*it);
     }
+
+    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
+        delete (*it);
+    }
 }
 
 void Game::play() {
     if (DEBUG) printf("Game::play()\n");
 
+    unsigned char key[ALLEGRO_KEY_MAX];
+    memset(key, 0, sizeof(key));
+
     bool play = true, redraw = true;
     ALLEGRO_EVENT event;
+
     al_start_timer(this->frame_timer);
     while (play) {
         al_wait_for_event(this->event_queue, &event);
         switch (event.type) {
         case ALLEGRO_EVENT_TIMER:
+            if (key[ALLEGRO_KEY_UP])
+                this->player.move(Direction(1,0,0,0));
+            if (key[ALLEGRO_KEY_DOWN])
+                this->player.move(Direction(0,1,0,0));
+            if (key[ALLEGRO_KEY_RIGHT])
+                this->player.move(Direction(0,0,1,0));
+            if (key[ALLEGRO_KEY_LEFT])
+                this->player.move(Direction(0,0,0,1));
+            if (key[ALLEGRO_KEY_ESCAPE])
+                play = false;
+
+            for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
+                key[i] &= (int)KeyStatus::key_seen;
+
             redraw = true;
             break;
         case ALLEGRO_EVENT_KEY_DOWN:
-            //handle_input(event);
+            key[event.keyboard.keycode] = (int)KeyStatus::key_seen | (int)KeyStatus::key_released;
+            break;
+        case ALLEGRO_EVENT_KEY_UP:
+            key[event.keyboard.keycode] &= (int)KeyStatus::key_released;
             break;
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             play = false;
@@ -48,6 +73,9 @@ void Game::play() {
             redraw = false;
         }
     }
+
+    #undef KEY_SEEN
+    #undef KEY_RELEASED
 }
 
 void Game::update() {

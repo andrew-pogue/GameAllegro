@@ -4,8 +4,6 @@
 
 // too much abstraction?
 // overcomplicating things?
-// scrap this whole thing?
-// maybe
 
 /**
  * Abstract class for Allegro C++ wrappers that ensures Allegro's systems
@@ -14,7 +12,7 @@
 struct Init {
     /**
      * Initializes Allegro core and sub-systems and installs input devices
-     *  if have they not already been initialized/installed. If they have, does nothing.
+     *  if they have not already been initialized/installed. If they have, does nothing.
      **/
     Init() {
         // if (DEBUG) printf("Game::init()\n");

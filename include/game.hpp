@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <stdlib.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <list>
@@ -12,10 +13,15 @@
 #include "alcpp_timer.hpp"
 
 #include "text.hpp"
-#include "player.hpp"
+#include "character.hpp"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
+
+enum class KeyStatus {
+    key_seen = 1,
+    key_released = 2,
+};
 
 class Game {
 private:
@@ -23,9 +29,10 @@ private:
     Timer frame_timer;
     EventQueue event_queue;
     
-    Player player;
+    Character player;
     std::list<Actor*> actors;
     std::list<Prop*> independent_props;
+    // render_queue
 
     void load();
     void update();

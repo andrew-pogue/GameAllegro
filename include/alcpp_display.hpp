@@ -15,5 +15,5 @@ private:
     ALLEGRO_DISPLAY* display_;
     int width_;
     int height_;
-    int x_, y_, z_;
+    int x_, y_, z_; // position in game world
 };
