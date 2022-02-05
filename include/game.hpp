@@ -7,12 +7,13 @@
 
 #include "actor.hpp"
 #include "prop.hpp"
+#include "input.hpp"
 
 #include "alcpp_display.hpp"
 #include "alcpp_event_queue.hpp"
 #include "alcpp_timer.hpp"
 
-#include "text.hpp"
+#include "ui_text.hpp"
 #include "character.hpp"
 
 const int WINDOW_WIDTH = 640;
@@ -28,6 +29,7 @@ private:
     Display display;
     Timer frame_timer;
     EventQueue event_queue;
+    InputHandler input_handler;
     
     Character player;
     std::list<Actor*> actors;
@@ -38,7 +40,7 @@ private:
     void update();
     void render();
     
-    void handle_input(ALLEGRO_EVENT);
+    void handle_input();
     void handle_timers();
     void handle_commands();
 public:

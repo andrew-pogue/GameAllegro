@@ -4,7 +4,7 @@ static const bool DEBUG = true;
 
 Game::Game()
     : display(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 0), frame_timer(1.0 / 30.0), event_queue(),
-        player(0, 0, 0), actors(), independent_props()
+        input_handler(), player(0, 0, 0), actors(), independent_props()
 {
     if (DEBUG) printf("Game::Game()\n");
     this->event_queue.register_event_source(al_get_keyboard_event_source());
@@ -28,9 +28,6 @@ Game::~Game() {
 void Game::play() {
     if (DEBUG) printf("Game::play()\n");
 
-    unsigned char key[ALLEGRO_KEY_MAX];
-    memset(key, 0, sizeof(key));
-
     bool play = true, redraw = true;
     ALLEGRO_EVENT event;
 
@@ -39,27 +36,14 @@ void Game::play() {
         al_wait_for_event(this->event_queue, &event);
         switch (event.type) {
         case ALLEGRO_EVENT_TIMER:
-            if (key[ALLEGRO_KEY_UP])
-                this->player.move(Direction(1,0,0,0));
-            if (key[ALLEGRO_KEY_DOWN])
-                this->player.move(Direction(0,1,0,0));
-            if (key[ALLEGRO_KEY_RIGHT])
-                this->player.move(Direction(0,0,1,0));
-            if (key[ALLEGRO_KEY_LEFT])
-                this->player.move(Direction(0,0,0,1));
-            if (key[ALLEGRO_KEY_ESCAPE])
-                play = false;
-
-            for(int i = 0; i < ALLEGRO_KEY_MAX; i++)
-                key[i] &= (int)KeyStatus::key_seen;
-
+            handle_input();
             redraw = true;
             break;
         case ALLEGRO_EVENT_KEY_DOWN:
-            key[event.keyboard.keycode] = (int)KeyStatus::key_seen | (int)KeyStatus::key_released;
+            this->input_handler.key_pressed(event.keyboard.keycode);
             break;
         case ALLEGRO_EVENT_KEY_UP:
-            key[event.keyboard.keycode] &= (int)KeyStatus::key_released;
+            this->input_handler.key_released(event.keyboard.keycode);
             break;
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             play = false;
@@ -109,17 +93,15 @@ void Game::load() {
     this->independent_props.push_back(new Text("Allegro is cool!", 70, 70));
 }
 
-void Game::handle_input(ALLEGRO_EVENT event) {
-    if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
-    ALLEGRO_KEYBOARD_STATE* keyboard = nullptr;
-    al_get_keyboard_state(keyboard);
-    if (al_key_down(keyboard, ALLEGRO_KEY_UP)) {
+void Game::handle_input() {
+    // if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
+    if (this->input_handler[ALLEGRO_KEY_UP])
         this->player.move(Direction(1,0,0,0));
-    } if (al_key_down(keyboard, ALLEGRO_KEY_DOWN)) {
+    if (this->input_handler[ALLEGRO_KEY_DOWN])
         this->player.move(Direction(0,1,0,0));
-    } if (al_key_down(keyboard, ALLEGRO_KEY_LEFT)) {
-        this->player.move(Direction(0,0,0,1));
-    } if (al_key_down(keyboard, ALLEGRO_KEY_RIGHT)) {
+    if (this->input_handler[ALLEGRO_KEY_RIGHT])
         this->player.move(Direction(0,0,1,0));
-    }
+    if (this->input_handler[ALLEGRO_KEY_LEFT])
+        this->player.move(Direction(0,0,0,1));
+    this->input_handler.key_seen_all();
 }
