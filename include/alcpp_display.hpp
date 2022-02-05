@@ -11,9 +11,16 @@ struct Display : Init {
 
     operator ALLEGRO_DISPLAY*(void)
     { return display_; }
+
+    int get_height() const
+    { return height_; }
+
+    int get_width() const
+    { return width_; }
+
+    int x, y, z; // position in game world
 private:
     ALLEGRO_DISPLAY* display_;
     int width_;
     int height_;
-    int x_, y_, z_; // position in game world
 };

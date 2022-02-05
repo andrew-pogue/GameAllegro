@@ -7,14 +7,15 @@
 
 struct Text : Prop {
     Text(std::string, int, int);
+    Text(std::string, int, int, int, int, int);
     ~Text();
 
-    void render() const override;
-    void set_color(int r, int g, int b);
-    void set_color(int r, int g, int b, int a);
+    void render(int, int) const override;
+    void set_color(int, int, int);
+    void set_color(int, int, int, int);
 
 private:
-    std::string string;
-    Font font;
-    ALLEGRO_COLOR color;
+    std::string string_;
+    Font font_;
+    ALLEGRO_COLOR color_;
 };

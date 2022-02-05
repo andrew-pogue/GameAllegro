@@ -6,12 +6,12 @@
 #include "alcpp_font.hpp"
 #include "direction.hpp"
 
-class Character : Actor {
-public:
+struct Character : Actor {
     Character(int, int, int);
+    Character(int, int, int, int, int, int);
     ~Character();
     void act() const override;
-    void render() const override;
+    void render(int, int) const override;
     void move(Direction);
 private:
     std::string str_;

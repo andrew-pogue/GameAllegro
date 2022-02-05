@@ -3,7 +3,7 @@
 static const bool DEBUG = true;
 
 Display::Display(int width, int height, int x, int y, int z)
-    : display_(nullptr), width_(width), height_(height), x_(x), y_(y), z_(z)
+    : x(x), y(y), z(z), display_(nullptr), width_(width), height_(height)
 {
     if (DEBUG) printf("Display::Display(%i, %i, %i, %i, %i)\n", width, height, x, y, z);
     display_ = al_create_display(width, height);

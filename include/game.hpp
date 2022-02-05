@@ -15,6 +15,8 @@
 
 #include "ui_text.hpp"
 #include "character.hpp"
+#include "level.hpp"
+#include "render.hpp"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
@@ -34,6 +36,7 @@ private:
     Character player;
     std::list<Actor*> actors;
     std::list<Prop*> independent_props;
+    Level level;
     // render_queue
 
     void load();

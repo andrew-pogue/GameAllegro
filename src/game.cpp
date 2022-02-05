@@ -4,7 +4,7 @@ static const bool DEBUG = true;
 
 Game::Game()
     : display(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 0), frame_timer(1.0 / 30.0), event_queue(),
-        input_handler(), player(0, 0, 0), actors(), independent_props()
+        input_handler(), player(0, 0, 0, 255, 0, 0), actors(), independent_props(), level()
 {
     if (DEBUG) printf("Game::Game()\n");
     this->event_queue.register_event_source(al_get_keyboard_event_source());
@@ -73,35 +73,46 @@ void Game::render() {
     // if (DEBUG) printf("Game::render()\n");
 
     al_clear_to_color(al_map_rgb(0, 0, 0));
+
+    // this->level.render(display);
     
-    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
-        (*it)->render();
+    for (auto p : independent_props) {
+        render_test(this->display, p);
     }
 
-    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
-        (*it)->render();
+    for (auto a : actors) {
+        render_test(this->display, a);
     }
 
-    player.render();
+    Entity* p = &player;
+    render_test(display, p);
     
     al_flip_display();
 }
 
 void Game::load() {
     if (DEBUG) printf("Game::load()\n");
-    this->independent_props.push_back(new Text("Hello World!", 10, 10));
-    this->independent_props.push_back(new Text("Allegro is cool!", 70, 70));
+    this->independent_props.push_back(new Text("Hello World!", 10, 10, 0, 255, 0));
+    this->independent_props.push_back(new Text("Allegro is cool!", 70, 70, 0, 0, 255));
 }
 
 void Game::handle_input() {
     // if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
-    if (this->input_handler[ALLEGRO_KEY_UP])
+    if (this->input_handler[ALLEGRO_KEY_UP]) {
         this->player.move(Direction(1,0,0,0));
-    if (this->input_handler[ALLEGRO_KEY_DOWN])
+    }
+
+    if (this->input_handler[ALLEGRO_KEY_DOWN]) {
         this->player.move(Direction(0,1,0,0));
-    if (this->input_handler[ALLEGRO_KEY_RIGHT])
+    }
+
+    if (this->input_handler[ALLEGRO_KEY_RIGHT]) {
         this->player.move(Direction(0,0,1,0));
-    if (this->input_handler[ALLEGRO_KEY_LEFT])
+    }
+
+    if (this->input_handler[ALLEGRO_KEY_LEFT]) {
         this->player.move(Direction(0,0,0,1));
+    }
+
     this->input_handler.key_seen_all();
 }
