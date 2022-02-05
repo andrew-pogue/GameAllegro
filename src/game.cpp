@@ -3,7 +3,7 @@
 static const bool DEBUG = true;
 
 Game::Game()
-    : display(WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0, 0), frame_timer(1.0 / 30.0), event_queue(),
+    : display(WINDOW_WIDTH, WINDOW_HEIGHT), frame_timer(1.0 / 30.0), event_queue(),
         input_handler(), player(0, 0, 0, 255, 0, 0), actors(), independent_props(), level()
 {
     if (DEBUG) printf("Game::Game()\n");
@@ -11,6 +11,7 @@ Game::Game()
     this->event_queue.register_event_source(this->display);
     this->event_queue.register_event_source(this->frame_timer);
     this->load();
+    this->display.follow(&this->player);
 }
 
 Game::~Game() {
@@ -94,6 +95,16 @@ void Game::load() {
     if (DEBUG) printf("Game::load()\n");
     this->independent_props.push_back(new Text("Hello World!", 10, 10, 0, 255, 0));
     this->independent_props.push_back(new Text("Allegro is cool!", 70, 70, 0, 0, 255));
+    
+    this->independent_props.push_back(new Text("#", 0,        0,            255, 0, 255));
+    this->independent_props.push_back(new Text("#", 320,        240,        255, 0, 255));
+    this->independent_props.push_back(new Text("#", -320 + 8,   -240 + 8,   255, 0, 255));
+    this->independent_props.push_back(new Text("#", 320,        0,          255, 0, 255));
+    this->independent_props.push_back(new Text("#", -320 + 8,   0,          255, 0, 255));
+    this->independent_props.push_back(new Text("#", 0,          240,        255, 0, 255));
+    this->independent_props.push_back(new Text("#", 0,          -240 + 8,   255, 0, 255));
+    this->independent_props.push_back(new Text("#", 320,        -240 + 8,   255, 0, 255));
+    this->independent_props.push_back(new Text("#", -320 + 8,   240,        255, 0, 255));
 }
 
 void Game::handle_input() {

@@ -2,10 +2,11 @@
 
 static const bool DEBUG = true;
 
-Display::Display(int width, int height, int x, int y, int z)
-    : x(x), y(y), z(z), display_(nullptr), width_(width), height_(height)
+Display::Display(int width, int height)
+    : follow_x_(nullptr), follow_y_(nullptr), follow_z_(nullptr), display_(nullptr),
+    width_(width), height_(height)
 {
-    if (DEBUG) printf("Display::Display(%i, %i, %i, %i, %i)\n", width, height, x, y, z);
+    if (DEBUG) printf("Display::Display(%i, %i)\n", width, height);
     display_ = al_create_display(width, height);
     if (!display_) throw "Error: failed to create display.";
 }

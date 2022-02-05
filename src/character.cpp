@@ -25,12 +25,12 @@ void Character::act() const {
 }
 
 void Character::render(int x, int y) const {
-    if (DEBUG) printf("Character::render(%i, %i)\n", x, y);
+    // if (DEBUG) printf("Character::render(%i, %i)\n", x, y);
     al_draw_text(font_, color_, x, y, 0, str_.c_str());
 }
 
 void Character::move(Direction direction) {
     // if (DEBUG) printf("Character::move(Direction)\n");
-    x_ += ((direction.east - direction.west) * 3);
-    y_ += ((direction.south - direction.north) * 3);
+    x_ += ((direction.east - direction.west) * 6);
+    y_ += ((direction.south - direction.north) * 6);
 }

@@ -9,4 +9,5 @@ struct Entity {
     int get_z() const { return z_; }
 protected:
     int x_, y_, z_;
+    friend class Display;
 };
