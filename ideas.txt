@@ -5,3 +5,27 @@ concurrency:
     thread for updating game logic
     thread for rendering
 
+ui text and elements that are attached to/follow the display
+main menu and game menu
+tab to change default game font
+scroll to zoom in and out (increase/decrease font size)
+
+font handling should be done by Game
+every draw function can be put in one place
+al_wrapper should only handle destroying of resources
+template wrapper that accepts custom destroy function
+
+entity have public debug bool that debugs that one entity
+remove font from text (or turn into string)
+keep color on text
+
+make tetris
+make classic space shoot-em up
+make mario-like side-scroller
+make classic roguelike
+make action roguelike
+make space sandbox shooter
+make roguelike rpg
+make civilization-like turn-based strategy
+make xcom-like turn-based strategy
+make aoe-like real-time strategy

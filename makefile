@@ -13,8 +13,8 @@ CXXFLAGS := -Wall
 IFLAGS := $(addprefix -I,$(IDIR))
 DFLAGS = -MMD -MF $(@:.o=.d)
 
-LFLAGS := $(addprefix -L,$(LDIR)) -lmingw32 -lallegro -lallegro_main -lallegro_font -lallegro_image
-LFLAGS += -lallegro_primitives -lallegro_audio -lallegro_video -lallegro_color
+LFLAGS := $(addprefix -L,$(LDIR)) -lmingw32 -lallegro -lallegro_main -lallegro_font -lallegro_ttf
+LFLAGS += -lallegro_primitives -lallegro_audio -lallegro_video -lallegro_color -lallegro_image
 ifeq ($(OS), windows)
 	LFLAGS += -mconsole -mwindows
 endif

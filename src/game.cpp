@@ -3,26 +3,22 @@
 static const bool DEBUG = true;
 
 Game::Game()
-    : display(WINDOW_WIDTH, WINDOW_HEIGHT), frame_timer(1.0 / 30.0), event_queue(),
-        input_handler(), player(0, 0, 0, 255, 0, 0), actors(), independent_props(), level()
+    : display_(WINDOW_WIDTH, WINDOW_HEIGHT), frame_timer_(1.0 / 30.0),
+        event_queue_(), keylog_(), font_manager_(), player_(nullptr), entities_()
 {
     if (DEBUG) printf("Game::Game()\n");
-    this->event_queue.register_event_source(al_get_keyboard_event_source());
-    this->event_queue.register_event_source(this->display);
-    this->event_queue.register_event_source(this->frame_timer);
-    this->load();
-    this->display.follow(&this->player);
+    event_queue_.register_event_source(al_get_keyboard_event_source());
+    event_queue_.register_event_source(al_get_mouse_event_source());
+    event_queue_.register_event_source(display_);
+    event_queue_.register_event_source(frame_timer_);
+    load();
 }
 
 Game::~Game() {
     if (DEBUG) { printf("Game::~Game()\n"); }
 
-    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
-        delete (*it);
-    }
-
-    for (auto it = this->independent_props.begin(); it != this->independent_props.end(); it++) {
-        delete (*it);
+    for (auto entity : entities_) {
+        delete entity;
     }
 }
 
@@ -32,98 +28,129 @@ void Game::play() {
     bool play = true, redraw = true;
     ALLEGRO_EVENT event;
 
-    al_start_timer(this->frame_timer);
+    frame_timer_.start();
     while (play) {
-        al_wait_for_event(this->event_queue, &event);
+        event_queue_.wait_for_event(&event);
+
         switch (event.type) {
         case ALLEGRO_EVENT_TIMER:
             handle_input();
             redraw = true;
             break;
         case ALLEGRO_EVENT_KEY_DOWN:
-            this->input_handler.key_pressed(event.keyboard.keycode);
+            keylog_.set_key_pressed(event.keyboard.keycode);
             break;
         case ALLEGRO_EVENT_KEY_UP:
-            this->input_handler.key_released(event.keyboard.keycode);
+            keylog_.set_key_released(event.keyboard.keycode);
             break;
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
             play = false;
             break;
         }
 
-        // this->update();
+        for (auto entity : entities_) {
+            entity->update();
+        }
 
-        if (redraw && al_is_event_queue_empty(this->event_queue)) {
-            this->render();
+        if (redraw && event_queue_.is_empty()) {
+            render();
             redraw = false;
         }
     }
-
-    #undef KEY_SEEN
-    #undef KEY_RELEASED
-}
-
-void Game::update() {
-    if (DEBUG) printf("Game::update()\n");
-    for (auto it = this->actors.begin(); it != this->actors.end(); it++) {
-        (*it)->act();
-    }
-}
-
-void Game::render() {
-    // if (DEBUG) printf("Game::render()\n");
-
-    al_clear_to_color(al_map_rgb(0, 0, 0));
-
-    // this->level.render(display);
-    
-    for (auto p : independent_props) {
-        render_test(this->display, p);
-    }
-
-    for (auto a : actors) {
-        render_test(this->display, a);
-    }
-
-    Entity* p = &player;
-    render_test(display, p);
-    
-    al_flip_display();
 }
 
 void Game::load() {
     if (DEBUG) printf("Game::load()\n");
-    this->independent_props.push_back(new Text("Hello World!", 10, 10, 0, 255, 0));
-    this->independent_props.push_back(new Text("Allegro is cool!", 70, 70, 0, 0, 255));
+
+    if (!font_manager_.load_ttf(FONT_DEFAULT, FONT_SIZE)) {
+        throw "Failed to load ttf font\"" + FONT_DEFAULT + "\"";
+    }
+
+    Font font(font_manager_[FONT_DEFAULT], al_map_rgb(255, 255, 255));
+
+    entities_.push_front(new entity::Text("@", Coord(0, 0, 0), font));
+    player_ = entities_.front();
+
+    font.color = al_map_rgb(255, 0, 255);
+
+    entities_.push_front(new entity::Text("Hello World!", Coord(10, 10, 0), font));
+
+    font.color = al_map_rgb(155, 55, 155);
+
+    entities_.push_front(new entity::Text("Allegro is cool!", Coord(70, 70, 0), font));
+
+    font.color = al_map_rgb(0, 255, 0);
     
-    this->independent_props.push_back(new Text("#", 0,        0,            255, 0, 255));
-    this->independent_props.push_back(new Text("#", 320,        240,        255, 0, 255));
-    this->independent_props.push_back(new Text("#", -320 + 8,   -240 + 8,   255, 0, 255));
-    this->independent_props.push_back(new Text("#", 320,        0,          255, 0, 255));
-    this->independent_props.push_back(new Text("#", -320 + 8,   0,          255, 0, 255));
-    this->independent_props.push_back(new Text("#", 0,          240,        255, 0, 255));
-    this->independent_props.push_back(new Text("#", 0,          -240 + 8,   255, 0, 255));
-    this->independent_props.push_back(new Text("#", 320,        -240 + 8,   255, 0, 255));
-    this->independent_props.push_back(new Text("#", -320 + 8,   240,        255, 0, 255));
+    entities_.push_front(new entity::Text("(0,0)", Coord(0,          0,      0), font));
+    entities_.push_front(new entity::Text("(+,+)", Coord(320 - 8,    240 - 8,    0), font));
+    entities_.push_front(new entity::Text("(-,-)", Coord(-320 + 8,   -240 + 8,   0), font));
+    entities_.push_front(new entity::Text("(+,0)", Coord(320 - 8,    0,         0), font));
+    entities_.push_front(new entity::Text("(-,0)", Coord(-320 + 8,   0,         0), font));
+    entities_.push_front(new entity::Text("(0,+)", Coord(0,          240 - 8,    0), font));
+    entities_.push_front(new entity::Text("(0,-)", Coord(0,        -240 + 8,   0), font));
+    entities_.push_front(new entity::Text("(+,-)", Coord(320 - 8,    -240 + 8,   0), font));
+    entities_.push_front(new entity::Text("(-,+)", Coord(-320 + 8,   240 - 8,    0), font));
+
+    font.color = al_map_rgb(0, 0, 255);
+
+    entities_.push_front(new entity::Text("Insert Fun Game Here", Coord(-50,       -20,        0), font));
+
+    // ui_elements_.emplace_front(ui::Text("User Interface WIP", 10, 10, al_map_rgb(255, 0, 0)));
 }
 
 void Game::handle_input() {
+
     // if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
-    if (this->input_handler[ALLEGRO_KEY_UP]) {
-        this->player.move(Direction(1,0,0,0));
+    if (keylog_[ALLEGRO_KEY_UP]) {
+        player_->move(0,PLAYER_SPEED,0);
     }
 
-    if (this->input_handler[ALLEGRO_KEY_DOWN]) {
-        this->player.move(Direction(0,1,0,0));
+    if (keylog_[ALLEGRO_KEY_DOWN]) {
+        player_->move(0,-PLAYER_SPEED,0);
     }
 
-    if (this->input_handler[ALLEGRO_KEY_RIGHT]) {
-        this->player.move(Direction(0,0,1,0));
+    if (keylog_[ALLEGRO_KEY_RIGHT]) {
+        player_->move(PLAYER_SPEED,0,0);
     }
 
-    if (this->input_handler[ALLEGRO_KEY_LEFT]) {
-        this->player.move(Direction(0,0,0,1));
+    if (keylog_[ALLEGRO_KEY_LEFT]) {
+        player_->move(-PLAYER_SPEED,0,0);
     }
 
-    this->input_handler.key_seen_all();
+    keylog_.set_all_keys_seen();
+}
+
+/**
+ * Renders all entities such that only entities that are visible on screen are rendered.
+ **/
+void Game::render() {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+
+    ALLEGRO_VERTEX v[] = {
+        { .x = 210, .y = 320, .z = 0, .color = al_map_rgb_f(1, 0, 0) },
+        { .x = 330, .y = 320, .z = 0, .color = al_map_rgb_f(0, 1, 0) },
+        { .x = 210, .y = 420, .z = 0, .color = al_map_rgb_f(0, 0, 1) },
+        { .x = 330, .y = 420, .z = 0, .color = al_map_rgb_f(1, 1, 0) },
+        { .x = 270, .y = 470, .z = 0, .color = al_map_rgb_f(1, 0, 1) },
+    };
+
+    for (auto entity : entities_) {
+        if (player_->get_z() == entity->get_z()) {
+            int adjusted_x = entity->get_x() - player_->get_x() + (display_.get_width() / 2),
+                adjusted_y = player_->get_y() - entity->get_y() + (display_.get_height() / 2),
+                leeway = 30;
+
+            if ( adjusted_x > -leeway 
+                && adjusted_x < display_.get_width() + leeway
+                && adjusted_y > -leeway
+                && adjusted_y < display_.get_height() + leeway
+            ) {
+                entity->render(adjusted_x, adjusted_y - FONT_SIZE / 2);
+            }
+        }
+    }
+
+    al_draw_prim(v, NULL, NULL, 0, 5, ALLEGRO_PRIM_TRIANGLE_STRIP);
+    
+    al_flip_display();
 }

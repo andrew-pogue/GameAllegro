@@ -1,53 +1,53 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
-#include <list>
+#include <allegro5/allegro_primitives.h>
 
-#include "actor.hpp"
-#include "prop.hpp"
-#include "input.hpp"
+#include <forward_list>
+#include <queue>
 
-#include "alcpp_display.hpp"
-#include "alcpp_event_queue.hpp"
-#include "alcpp_timer.hpp"
+#include "entity.hpp"
 
-#include "ui_text.hpp"
-#include "character.hpp"
-#include "level.hpp"
-#include "render.hpp"
+#include "io_keylog.hpp"
+
+#include "al_display.hpp"
+#include "al_event_queue.hpp"
+#include "al_timer.hpp"
+
+#include "entity_text.hpp"
+
+// #include "ui_text.hpp"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
-
-enum class KeyStatus {
-    key_seen = 1,
-    key_released = 2,
-};
+const int FONT_SIZE = 24;
+const std::string FONT_DEFAULT = "assets/font/Gamer.ttf";
+const int PLAYER_SPEED = 10;
 
 class Game {
-private:
-    Display display;
-    Timer frame_timer;
-    EventQueue event_queue;
-    InputHandler input_handler;
-    
-    Character player;
-    std::list<Actor*> actors;
-    std::list<Prop*> independent_props;
-    Level level;
-    // render_queue
-
-    void load();
-    void update();
-    void render();
-    
-    void handle_input();
-    void handle_timers();
-    void handle_commands();
 public:
     Game();
     ~Game();
     void play();
+private:
+    Display display_;
+    Timer frame_timer_;
+    EventQueue event_queue_;
+    KeyLog keylog_;
+    FontManager font_manager_;
+    
+    Entity* player_;
+    // This list takes responsibility for de-allocating objects.
+    std::forward_list<Entity*> entities_;
+    // std::forward_list<ui::Element*> ui_elements_;
+
+    void load();
+    void render();
+    
+    void handle_input();
+    // void handle_timers();
+    // void handle_commands();
 };
