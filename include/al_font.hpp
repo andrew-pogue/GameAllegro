@@ -31,7 +31,11 @@ struct Font {
     {}
 
     Font(ALLEGRO_FONT* font, ALLEGRO_COLOR color)
-        : al_font(font), color(color), render_flag(ALLEGRO_ALIGN_CENTER)
+        : al_font(font), color(color), render_flag()
+    {}
+
+    Font(ALLEGRO_FONT* font, ALLEGRO_COLOR color, int flag)
+        : al_font(font), color(color), render_flag(flag)
     {}
     
     ~Font() {}

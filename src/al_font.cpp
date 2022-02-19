@@ -22,6 +22,8 @@ ALLEGRO_FONT* FontManager::operator[](const std::string path) {
 
 bool FontManager::load_bmp(std::string path) {
     if (DEBUG) printf("FontManager::load_bmp(%s)\n", path.c_str());
+    if (path.size() == 0) return true;
+    if (font_map_.find(path) != font_map_.end()) return true;
     ALLEGRO_FONT* font = al_load_bitmap_font(path.c_str());
     if (font) {
         font_map_[path] = font;
@@ -32,6 +34,8 @@ bool FontManager::load_bmp(std::string path) {
 
 bool FontManager::load_ttf(std::string path, int size) {
     if (DEBUG) printf("FontManager::load_ttf(%s, %i)\n", path.c_str(), size);
+    if (path.size() == 0) return true;
+    if (font_map_.find(path) != font_map_.end()) return true;
     ALLEGRO_FONT* font = al_load_ttf_font(path.c_str(), size, ALLEGRO_ALIGN_CENTER);
     if (font) {
         font_map_[path] = font;
@@ -42,6 +46,8 @@ bool FontManager::load_ttf(std::string path, int size) {
 
 bool FontManager::load_font(std::string path, int size) {
     if (DEBUG) printf("FontManager::load_font(%s, %i)\n", path.c_str(), size);
+    if (path.size() == 0) return true;
+    if (font_map_.find(path) != font_map_.end()) return true;
     ALLEGRO_FONT* font = al_load_font(path.c_str(), size, ALLEGRO_ALIGN_CENTER);
     if (font) {
         font_map_[path] = font;

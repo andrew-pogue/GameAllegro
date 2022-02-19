@@ -5,10 +5,6 @@
 #include <allegro5/allegro_primitives.h>
 #include "game.hpp"
 
-#define FONT_SIZE 24
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-
 void must_init(bool test, const char *description) {
     if(test) return;
     printf("Failed to initialize %s!\n", description);
@@ -27,10 +23,25 @@ int main (int argc, char **argv) {
     must_init(al_init_image_addon(), "image addon");
     must_init(al_init_primitives_addon(), "primitives addon");
 
+    std::string font_path = "assets/font/PressStart2P-Regular.ttf";
+    int font_size = 24;
+    for (auto i = 0; i < argc; i++) {
+        switch (i) {
+        case 1:
+            font_path = argv[i];
+            break;
+        case 2:
+            font_size = atoi(argv[i]);
+            if (!font_size) font_size = 16;
+        default:
+            break;
+        }
+    }
+
     Game* game = nullptr;
     
     try {
-        game = new Game();
+        game = new Game(font_path, font_size);
         game->play();
     }
 

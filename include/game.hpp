@@ -18,18 +18,19 @@
 #include "al_timer.hpp"
 
 #include "entity_text.hpp"
+#include "entity_glyh.hpp"
+
+#include "math.h"
 
 // #include "ui_text.hpp"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
-const int FONT_SIZE = 24;
-const std::string FONT_DEFAULT = "assets/font/Gamer.ttf";
 const int PLAYER_SPEED = 10;
 
 class Game {
 public:
-    Game();
+    Game(std::string font, int font_size);
     ~Game();
     void play();
 private:
@@ -44,10 +45,16 @@ private:
     std::forward_list<Entity*> entities_;
     // std::forward_list<ui::Element*> ui_elements_;
 
+    const std::string font_;
+    const int font_size_;
+
     void load();
     void render();
     
     void handle_input();
     // void handle_timers();
     // void handle_commands();
+
+    void load_test_unicode_font();
+    void load_test_player_fov();
 };
