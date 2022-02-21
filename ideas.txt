@@ -29,3 +29,23 @@ make roguelike rpg
 make civilization-like turn-based strategy
 make xcom-like turn-based strategy
 make aoe-like real-time strategy
+
+game world position is in tiles not pixels
+    so a position of (2,4,3) translates to:
+        2 * g_tile_size
+        4 * g_tile_size
+        3 * g_tile_size
+ui position is still in pixels
+    such that
+        x < g_window_width + g_fov_leeway
+        y < g_window_height + g_fov_leeway
+        x > - (g_window_width + g_fov_leeway)
+        y > - (g_window_height + g_fov_leeway)
+            these bounds refers to the display constraints
+                entities outside of the display constrains aren't rendered
+
+
+test flecs system lambda captures
+test flecs event OnSet
+Whats the differences between using on_demand versus using a query?
+can you remove a component from within a query or system?

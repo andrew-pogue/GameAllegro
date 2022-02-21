@@ -1,60 +1,65 @@
 #pragma once
-#include <stdio.h>
 #include <stdlib.h>
-
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_primitives.h>
-
-#include <forward_list>
+#include <math.h>
+#include <iostream>
 #include <queue>
 
-#include "entity.hpp"
-
-#include "io_keylog.hpp"
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
 
 #include "al_display.hpp"
 #include "al_event_queue.hpp"
 #include "al_timer.hpp"
+#include "al_font.hpp"
 
-#include "entity_text.hpp"
-#include "entity_glyh.hpp"
+#include "io_keylog.hpp"
 
-#include "math.h"
+#include "flecs.h"
+#include "components.hpp"
 
 // #include "ui_text.hpp"
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
-const int PLAYER_SPEED = 10;
+const int GAME_SPEED = 2;
 
 class Game {
 public:
+
     Game(std::string font, int font_size);
     ~Game();
     void play();
+    void load();
+
 private:
+
+    flecs::world world_;
     Display display_;
     Timer frame_timer_;
     EventQueue event_queue_;
     KeyLog keylog_;
     FontManager font_manager_;
-    
-    Entity* player_;
-    // This list takes responsibility for de-allocating objects.
-    std::forward_list<Entity*> entities_;
-    // std::forward_list<ui::Element*> ui_elements_;
+    std::string font_path_;
+    int font_size_, tile_size_;
+    flecs::entity player_;
+    int action_wait_;
 
-    const std::string font_;
-    const int font_size_;
-
-    void load();
+    void process_input();
     void render();
-    
-    void handle_input();
-    // void handle_timers();
-    // void handle_commands();
 
-    void load_test_unicode_font();
+    int translate_x(const int& x) const;
+    int translate_y(const int& y) const;
+    bool display_contains(const int& x, const int& y) const;
+
+    void load_game_systems();
+    void load_move_systems();
+    void load_glyph_systems();
+    void load_text_systems();
     void load_test_player_fov();
+
+    void test(flecs::entity entity) {
+        // printf("Hello World!\n");
+        entity.add<CRender>();
+    }
+
 };

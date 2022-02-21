@@ -24,7 +24,7 @@ int main (int argc, char **argv) {
     must_init(al_init_primitives_addon(), "primitives addon");
 
     std::string font_path = "assets/font/PressStart2P-Regular.ttf";
-    int font_size = 24;
+    int font_size = 16;
     for (auto i = 0; i < argc; i++) {
         switch (i) {
         case 1:
