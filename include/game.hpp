@@ -3,6 +3,7 @@
 #include <math.h>
 #include <iostream>
 #include <queue>
+#include <vector>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
@@ -21,7 +22,7 @@
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
-const int GAME_SPEED = 2;
+const int GAME_SPEED = 3;
 
 class Game {
 public:
@@ -42,7 +43,10 @@ private:
     std::string font_path_;
     int font_size_, tile_size_;
     flecs::entity player_;
-    int action_wait_;
+    std::vector<unsigned short> action_wait_;
+    unsigned int move_wait_;
+    bool traveling_;
+    std::queue<CTravel> travelQ_;
 
     void process_input();
     void render();
@@ -56,6 +60,7 @@ private:
     void load_glyph_systems();
     void load_text_systems();
     void load_test_player_fov();
+    void foo();
 
     void test(flecs::entity entity) {
         // printf("Hello World!\n");

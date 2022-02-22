@@ -10,6 +10,10 @@ struct CMove {
     int x, y, z;
 };
 
+struct CTravel {
+    int x, y, z;
+};
+
 struct CGlyph {
     int codepoint;
     ALLEGRO_COLOR color;
@@ -33,3 +37,5 @@ struct CRender {
 
 // Use flecs switch and flecs case instead?
 struct CViewpoint {};
+
+struct CHello {};

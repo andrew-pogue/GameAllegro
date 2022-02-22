@@ -19,17 +19,6 @@ entity have public debug bool that debugs that one entity
 remove font from text (or turn into string)
 keep color on text
 
-make tetris
-make classic space shoot-em up
-make mario-like side-scroller
-make classic roguelike
-make action roguelike
-make space sandbox shooter
-make roguelike rpg
-make civilization-like turn-based strategy
-make xcom-like turn-based strategy
-make aoe-like real-time strategy
-
 game world position is in tiles not pixels
     so a position of (2,4,3) translates to:
         2 * g_tile_size
@@ -49,3 +38,5 @@ test flecs system lambda captures
 test flecs event OnSet
 Whats the differences between using on_demand versus using a query?
 can you remove a component from within a query or system?
+
+entity can only move if they have the move component?
