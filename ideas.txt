@@ -39,4 +39,67 @@ test flecs event OnSet
 Whats the differences between using on_demand versus using a query?
 can you remove a component from within a query or system?
 
-entity can only move if they have the move component?
+DONE smooth move
+DONE instant move
+teleport
+
+ghost trail effect
+    that leaves low brightness, transparent copy of its glyph in previous tile
+    effect dissapears quickly over time
+
+spiral enter effect
+    used when entering level
+    starting at center of screen, tiles are rendered one at a time 
+        in a spiral patter around player, spiralling outward till entire display is rendered
+circular/box enter effect
+    used when changing z level ??
+    starting at center of screen tiles around player are rendered,
+        then tiles around rendered tiles, until entire screen is rendered
+spiral exit effect
+circular exit effect
+
+try implementing hexagonal tiles?
+glyphs of various sizes?
+    2x2 tile glyph
+    3x3 tile glyph
+
+highlight effect
+    font_size is increased on glyph while highlighted
+    or bold font is used on glyph while highligthed
+
+sneak effect
+    italic font is used on glyph while highlighted
+    and/or color is faded
+
+fade in & fade out effect
+    type 1 where color brightness gradually increases/decreases
+    type 2 where transparency gradually decreases/increases
+
+blink effect
+    glyph rotates between render-enabled to render-disabled
+
+render priority system to ensure some entites get rendered before/after others
+
+in game level editor
+
+player faces a direction and can change direction
+    display rotates/orientes to reflect that direction
+
+revamp input processing to include command-pattern
+revamp how z-value is handled
+
+Cooldown component
+	unsigned short frames;
+
+KeyPress component
+	ALLEGRO_KEY key
+	unsigned short frames;
+
+MousePress component
+	mouse button
+	unsigned short frames;
+	
+implement hold for a few frames (1-3?) so that moving diagonally with arrow keys
+    or pushing multiple keys at once is easier
+
+fix the screen from jerking around when moving player in circle

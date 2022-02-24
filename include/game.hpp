@@ -22,7 +22,8 @@
 
 const int WINDOW_WIDTH = 640;
 const int WINDOW_HEIGHT = 480;
-const int GAME_SPEED = 3;
+const int GAME_SPEED = 4;
+const int FRAMES_PER_SECOND = 30;
 
 class Game {
 public:
@@ -46,7 +47,7 @@ private:
     std::vector<unsigned short> action_wait_;
     unsigned int move_wait_;
     bool traveling_;
-    std::queue<CTravel> travelQ_;
+    std::queue<CMove> moveQ_;
 
     void process_input();
     void render();
@@ -61,10 +62,4 @@ private:
     void load_text_systems();
     void load_test_player_fov();
     void foo();
-
-    void test(flecs::entity entity) {
-        // printf("Hello World!\n");
-        entity.add<CRender>();
-    }
-
 };

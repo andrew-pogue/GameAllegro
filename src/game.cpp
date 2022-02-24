@@ -5,8 +5,8 @@ static const bool DEBUG = true;
 Game::Game(std::string font_path, int font_size)
     : world_(), display_(WINDOW_WIDTH, WINDOW_HEIGHT), frame_timer_(1.0 / 30.0),
         event_queue_(), keylog_(), font_manager_(), font_path_(font_path), 
-        font_size_(font_size), tile_size_(font_size / (4/3)), action_wait_(ALLEGRO_KEY_MAX, 0),
-        move_wait_(0), traveling_(false), travelQ_()
+        font_size_(font_size), tile_size_(font_size * (3/2)), action_wait_(ALLEGRO_KEY_MAX, 0),
+        move_wait_(0), traveling_(false), moveQ_()
 {
     if (DEBUG) printf("Game::Game()\n");
     event_queue_.register_event_source(al_get_keyboard_event_source());
@@ -20,7 +20,7 @@ Game::Game(std::string font_path, int font_size)
     player_ = world_.entity("player")
         .set<CPosition>({0,0,0})
         .set<CGlyph>({'@', al_map_rgb(255,255,255)})
-        .set<CTravel>({0,0,0})
+        .add<CMove>()
         .add<CRender>();
 
     printf("tile size = %i\n", tile_size_);
@@ -76,23 +76,20 @@ void Game::load() {
     load_text_systems();
     load_move_systems();
 
-    // load_test_player_fov();
-
-    // foo();
-
-    int size = 10 * 10;
-    if (size % 2 == 0) size++;
-    int x_start = - size,
-        y_start = size,
-        y_end = - size,
-        x_end = size;
+    int size = 10;
+    float x_start = - size / 2,
+        x_end = - x_start,
+        y_start = size / 2,
+        y_end = - y_start;
     
-    for (auto x = x_start; x < x_end; x += tile_size_) {
-        for (auto y = y_start; y > y_end; y -= tile_size_) {
+    for (auto x = x_start; x <= x_end; x++) {
+        for (auto y = y_start; y >= y_end; y--) {
             int b = (int)(fabs(y + x) * size) % 255;
+            auto color = al_map_rgb(x,y,b);
+            if (!y || !x) color = al_map_rgb(155,155,155);
             world_.entity()
-                .set<CGlyph>({'.', al_map_rgb(x,y,b)})
-                .set<CPosition>({x, y, 0})
+                .set<CGlyph>({'.', color})
+                .set<CPosition>({ x, y, 0 })
                 .add<CRender>();
         }
     }
@@ -107,68 +104,64 @@ void Game::load_game_systems() {
 }
 
 void Game::process_input() {
+    // printf("process_input()\n");
+
     // add support for case in which player doesn't have CTravel
-    auto travel = player_.get<CTravel>();
-    int x = travel->x, 
-        y = travel->y, 
-        z = travel->z;
-    bool moved = false;
+    auto move = player_.get<CMove>();
+    auto pos = player_.get<CPosition>();
 
     // make so move wait speeds up if button is held down
     // make so glyph slides to next tile?
     // make so glyph leaves temporary trail behind it as it moves
-    if (!traveling_) {
+
+    if (!move->in_progress) {
+        float move_x = 0, move_y = 0;
+        int move_z = 0;
 
         if (keylog_[ALLEGRO_KEY_UP]) {
-            y += tile_size_;
-            moved = true;
+            move_y++;
         }
 
         if (keylog_[ALLEGRO_KEY_DOWN]) {
-            y -= tile_size_;
-            moved = true;
+            move_y--;
         }
 
         if (keylog_[ALLEGRO_KEY_RIGHT]) {
-            x += tile_size_;
-            moved = true;
+            move_x++;
         }
 
         if (keylog_[ALLEGRO_KEY_LEFT]) {
-            x -= tile_size_;
-            moved = true;
+            move_x--;
         }
 
+        player_.set<CMove>({ move_x, move_y, move_z, 1, true });
     }
 
     if (keylog_[ALLEGRO_KEY_C] && !action_wait_[ALLEGRO_KEY_C]) {
         action_wait_[ALLEGRO_KEY_C] = GAME_SPEED;
-        auto pos = player_.get<CPosition>();
-        printf("%s position: (%i,%i,%i)\n",
+        printf("%s position: (%f,%f,%i)\n",
             player_.name().c_str(), pos->x, pos->y, pos->z);
+    }
+
+    if (keylog_[ALLEGRO_KEY_SPACE] && !action_wait_[ALLEGRO_KEY_SPACE]) {
+        action_wait_[ALLEGRO_KEY_SPACE] = GAME_SPEED;
+        world_.entity()
+            .set<CPosition>({pos->x, pos->y, pos->z})
+            .set<CGlyph>({'#', al_map_rgb(155,155,155)})
+            .add<CRender>();
     }
     
     for(size_t key = 0; key < action_wait_.size(); key++) {
-        if (action_wait_[key] > 0) {
+        if (action_wait_[key]) {
             action_wait_[key]--;
         }
     }
 
-    if (!travelQ_.empty()) {
-        player_.set<CTravel>({
-            travelQ_.front().x,
-            travelQ_.front().y,
-            travelQ_.front().z,
-        });
-        travelQ_.pop();
-        if (moved) travelQ_.push(CTravel({ x, y, z }));
-    } else {
-        if (moved) player_.set<CTravel>({ x, y, z });
-    }
     keylog_.set_all_keys_seen();
 }
 
 void Game::render() {
+    // printf("render()\n");
     al_clear_to_color(al_map_rgb(0, 0, 0));
     al_hold_bitmap_drawing(true);
 
@@ -177,22 +170,22 @@ void Game::render() {
     const auto width = display_.get_width();
     const auto height = display_.get_height();
     const auto font_path = font_path_;
-    const auto font_size = font_size_;
+    // const auto font_size = font_size_;
     const auto tile_size = tile_size_;
 
     // make it so this bit only runs when the player or instance has moved.
     world_.each([=](flecs::entity e, const CPosition& pos, CRender& rend) {
         if (e == player_) {
-            rend.x = width/2;
-            rend.y = height/2;
+            rend.x = (float)width / 2;
+            rend.y = (float)height / 2;
             rend.z = pos.z;
             rend.is_enabled = true;
             return;
         }
 
         rend.is_enabled = false;
-        rend.x = pos.x - viewpoint->x + (width / 2);
-        rend.y = viewpoint->y - pos.y + (height / 2) - (font_size / 2);
+        rend.x = (pos.x - viewpoint->x) * tile_size + (float)width / 2;
+        rend.y = (viewpoint->y - pos.y) * tile_size + (float)height / 2;
         rend.z = pos.z;
 
         if (rend.z == viewpoint->z
@@ -205,7 +198,7 @@ void Game::render() {
         }
     });
 
-    world_.each([=](flecs::entity entity, CText& text, CRender& rend) {
+    world_.each([=](flecs::entity entity, const CText& text, const CRender& rend) {
         if (!rend.is_enabled) return;
         al_draw_text(
             font_manager_[font_path],
@@ -216,12 +209,14 @@ void Game::render() {
         ); 
     });
 
-    world_.each([=](flecs::entity entity, CGlyph& glyph, CRender& rend) {
+    world_.each([=](flecs::entity entity, const CGlyph& glyph, const CRender& rend) {
         if (!rend.is_enabled) return;
+        float j = 0.0;
+        if (glyph.codepoint == '.') j = (float)tile_size_ / 4.0;
         al_draw_glyph(
             font_manager_[font_path],
             glyph.color,
-            rend.x, rend.y,
+            rend.x, rend.y - j,
             glyph.codepoint
         );
     });

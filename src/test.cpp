@@ -5,8 +5,8 @@ void Game::load_test_player_fov()
 {
     auto color = al_map_rgb(0, 255, 0);
     auto flag = ALLEGRO_ALIGN_CENTER;
-    auto width = display_.get_width();
-    auto height = display_.get_height();
+    auto width = (float)display_.get_width();
+    auto height = (float)display_.get_height();
 
     world_.entity("(0,0)")
         .set<CPosition>({0, 0, 0})
@@ -101,7 +101,7 @@ void Game::foo() {
     for (auto str : map) {
         for (auto c : str) {
             world_.entity()
-                .set<CPosition>({(int)-(str.size()/2)+j, (int)(map.size()/2)-i, 0 })
+                .set<CPosition>({(float)-(str.size()/2)+j, (float)(map.size()/2)-i, 0 })
                 .set<CGlyph>({c, al_map_rgb(155,155,155)})
                 .add<CRender>();
             j++;

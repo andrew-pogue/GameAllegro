@@ -8,38 +8,33 @@ void Game::load_glyph_systems() {
 
 void Game::load_move_systems() {
     world_.system<CMove, CPosition>("update_move()")
-        .each([](flecs::entity e, CMove& move, CPosition& pos) {
-            pos.x += move.x;
-            pos.y += move.y;
-            pos.z += move.z;
-            move.x = 0;
-            move.y = 0;
-            move.z = 0;
-        });
+        .each([this](flecs::entity e, CMove& move, CPosition& pos) {
+            move.in_progress = false;
 
-    world_.system<CTravel, CPosition>("update_travel()")
-        .each([this](flecs::entity e, CTravel& travel, CPosition& pos) {
-            traveling_ = false;
-
-            if (travel.x) {
-                traveling_ = true;
-                int i = tile_size_ / 4 * travel.x / std::abs(travel.x);
+            if (move.x) {
+                move.in_progress = true;
+                float i = 0.25 * move.x / std::abs(move.x);
                 pos.x += i;
-                travel.x -= i;
+                move.x -= i;
             }
             
-            if (travel.y) {
-                traveling_ = true;
-                auto i = tile_size_ / 4 * travel.y / std::abs(travel.y);
+            if (move.y) {
+                move.in_progress = true;
+                float i = 0.25 * move.y / std::abs(move.y);
                 pos.y += i;
-                travel.y -= i;
+                move.y -= i;
             }
 
-            if (travel.z) {
-                traveling_ = true;
-                auto i = travel.z / std::abs(travel.z);
+            if (move.z) {
+                move.in_progress = true;
+                int i = move.z / std::abs(move.z);
                 pos.z += i;
-                travel.z -= i;
+                move.z -= i;
+            }
+
+            if (!move.in_progress && move.cooldown) {
+                move.in_progress = true;
+                move.cooldown--;
             }
         });
 }
