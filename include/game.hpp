@@ -1,26 +1,24 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+
+#include <forward_list>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_primitives.h>
 
-#include <forward_list>
-#include <queue>
-
 #include "entity.hpp"
+#include "tile.hpp"
+#include "keylog.hpp"
+#include "display.hpp"
+#include "event_queue.hpp"
+#include "timer.hpp"
+#include "font.hpp"
 
-#include "io_keylog.hpp"
-
-#include "al_display.hpp"
-#include "al_event_queue.hpp"
-#include "al_timer.hpp"
-
-#include "entity_text.hpp"
-#include "entity_glyh.hpp"
-
-#include "math.h"
+#include "text.hpp"
+#include "glyh.hpp"
 
 // #include "ui_text.hpp"
 
@@ -39,17 +37,17 @@ private:
     EventQueue event_queue_;
     KeyLog keylog_;
     FontManager font_manager_;
-    
+    std::string font_path_;
+    unsigned short font_size_;
     Entity* player_;
-    // This list takes responsibility for de-allocating objects.
-    std::forward_list<Entity*> entities_;
-    // std::forward_list<ui::Element*> ui_elements_;
-
-    const std::string font_;
-    const int font_size_;
+    std::forward_list<std::forward_list<std::forward_list<Tile>>> tiles_;
 
     void load();
     void render();
+    void update();
+
+    // Coord adjust_for_rendering(const Coord& coord) const;
+    void render(const Tile& tile) const;
     
     void handle_input();
     // void handle_timers();
