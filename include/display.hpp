@@ -2,9 +2,7 @@
 #include <allegro5/allegro.h>
 #include <stdio.h>
 
-/**
- * Wrapper for ALLEGRO_DISPLAY
- **/
+// Wrapper for ALLEGRO_DISPLAY
 struct Display {
     Display(int width, int height) : display_(nullptr) {
         display_ = al_create_display(width, height);

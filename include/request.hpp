@@ -2,59 +2,54 @@
 #include "entity.hpp"
 
 struct Request {
-    void run(Tile* tile) { run(std::make_shared<Tile>(tile)); }
-    virtual void run(std::shared_ptr<Tile> source) = 0;
+    virtual void run(Tile* source) = 0;
 };
 
-struct MoveRequest : Request {
-    const size_t id;
-    const Direction direction;
-
-    MoveRequest(size_t id, Direction dir)
-        : id(id), direction(dir), entity_()
+struct Move : Request {
+public:
+    Move(size_t id, Direction dir)
+        : id_(id), frame_(0), direction_(dir), entity_()
     {}
 
-    MoveRequest(const MoveRequest& other)
-        : id(other.id), direction(other.direction), frame_(other.frame_), entity_(other.entity_)
-    {}
+    void run(Tile* source) override {
+        auto tile = std::make_shared<Tile>(source);
 
-    void run(std::shared_ptr<Tile> source) override {
-        auto tile = source;
-        if (!tile) return;
-        if (!tile->has(id)) return;
-        if (frame_ == 0) {
-            entity_ = tile->get(id);
-        }
-        
+        if (!tile || !tile->has(id_))
+            return;
+
+        if (frame_ == 0)
+            entity_ = tile->get(id_);
         frame_++;
-        bool move_complete = false;
-        const Direction &dir = direction;
+
         auto e = entity_.lock();
-        
+        bool move_complete = false;
+
         switch (frame_) {
         case 1:
-            e->shift( 0.25 * (dir.east - dir.west),
-                0.25 * (dir.north - dir.south) );
+            e->shift( 0.25 * (direction_.east - direction_.west),
+                0.25 * (direction_.north - direction_.south) );
             break;
         case 2:
             if (e->is_collider && tile->has_collider) {
                 e->shift_reset();
                 move_complete = true;
             } else {
-                e->shift( 0.25 * (dir.east - dir.west), 0.25 * (dir.north - dir.south) );
+                e->shift( 0.25 * (direction_.east - direction_.west),
+                    0.25 * (direction_.north - direction_.south) );
             }
             break;
         case 3:
-            if (tile && dir.up) tile = tile->up;
-            if (tile && dir.down) tile = tile->down;
-            if (tile && dir.north) tile = tile->north;
-            if (tile && dir.south) tile = tile->south;
-            if (tile && dir.east) tile = tile->east;
-            if (tile && dir.west) tile = tile->west;
-            if (!tile || tile == source) return;
-            source->remove(id);
+            if (tile && direction_.up) tile = tile->up;
+            if (tile && direction_.down) tile = tile->down;
+            if (tile && direction_.north) tile = tile->north;
+            if (tile && direction_.south) tile = tile->south;
+            if (tile && direction_.east) tile = tile->east;
+            if (tile && direction_.west) tile = tile->west;
+            if (!tile || tile.get() == source) return;
+            source->remove(id_);
             tile->add(e.get());
-            e->shift( -0.25 * (dir.east - dir.west), -0.25 * (dir.north - dir.south) );
+            e->shift( -0.25 * (direction_.east - direction_.west),
+                -0.25 * (direction_.north - direction_.south) );
             break;
         case 4:
         default:
@@ -64,11 +59,18 @@ struct MoveRequest : Request {
         }
 
         if (!move_complete) {
-            tile->enqueue(new MoveRequest(*this));
+            tile->add(new Move(*this));
         }
     }
 
 private:
-    unsigned short frame_ = 0;
+    const size_t id_;
+    unsigned short frame_;
+    Direction direction_;
     std::weak_ptr<Entity> entity_;
+
+    Move(const Move& other)
+        : id_(other.id_), frame_(other.frame_),
+        direction_(direction_), entity_(other.entity_)
+    {}
 };

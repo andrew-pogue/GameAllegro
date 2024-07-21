@@ -4,27 +4,17 @@
 #include "entity.hpp"
 
 struct Text : Entity {
-    Text(std::string string, ALLEGRO_FONT* font)
-        : string_(string), font_(font)
+    Text(std::string string)
+        : string_(string), color_(al_map_rgb(255,255,255))
     {}
     
-    Text(std::string string, ALLEGRO_FONT* font, ALLEGRO_COLOR color)
-        : string_(string), font_(font)
-    {
-        color_.r = color.r;
-        color_.b = color.b;
-        color_.g = color.g;
-        color_.a = color.a;
-    }
+    Text(std::string string, ALLEGRO_COLOR color)
+        : string_(string), color_(color)
+    {}
 
-    Text(std::string string, ALLEGRO_FONT* font, ALLEGRO_COLOR color, int flag)
-        : string_(string), font_(font), render_flag_(flag)
-    {
-        color_.r = color.r;
-        color_.b = color.b;
-        color_.g = color.g;
-        color_.a = color.a;
-    }
+    Text(std::string string, ALLEGRO_COLOR color, int flag)
+        : string_(string), color_(color), render_flag_(flag)
+    {}
 
     ~Text() {}
 
@@ -32,8 +22,8 @@ struct Text : Entity {
         al_draw_text(
             font_, 
             color_,
-            x + x_ * Tile::size,
-            y + y_ * Tile::size,
+            x + rendx_ * Tile::size,
+            y + rendy_ * Tile::size,
             render_flag_,
             string_.c_str()
         ); 

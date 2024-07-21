@@ -4,6 +4,10 @@
 #include "entity.hpp"
 
 struct Glyph : Entity {
+    Glyph(int codepoint)
+        : codepoint_(codepoint), color_(al_map_rgb(255,255,255))
+    {}
+
     Glyph(int codepoint, ALLEGRO_COLOR color)
         : codepoint_(codepoint), color_(color)
     {}
@@ -14,8 +18,8 @@ struct Glyph : Entity {
         al_draw_glyph(
             font_,
             color_,
-            x + x_ * Tile::size,
-            y + y_ * Tile::size,
+            x + rendx_ * Tile::size,
+            y + rendy_ * Tile::size,
             codepoint_
         );
     }
