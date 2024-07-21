@@ -3,7 +3,7 @@
 #include "request.hpp"
 #include "tile.hpp"
 
-struct Entity {
+struct Entity : Position {
 public:
     Entity() 
         : id(generate_id()), tile(nullptr)
@@ -16,6 +16,8 @@ public:
     const size_t id;
     Tile *tile;
     bool is_collider = false;
+    inline static size_t count = 0;
+    inline static ALLEGRO_FONT* font = nullptr; 
 
     operator size_t () const { return id; }
 
@@ -24,23 +26,25 @@ public:
     virtual void update() {}
     virtual void render(float x, float y) const {}
 
-    // Support for commands:
-    virtual void move(const Direction& direction) const
-    { tile->enqueue(new Move(id, direction)); }
-
-    void shift(float x, float y) { 
-        x_ += x;
-        y_ += y; 
+    void act(Request* request) {
+        tile->add(request);
     }
 
+    // Shift render position in relation to the tile its on by (x, y) pixels.
+    void shift(float x, float y) { 
+        rendx_ += x;
+        rendy_ += y; 
+    }
+
+    // Re-adjust the render position so that it is at the center of the tile.
     void shift_reset() { 
-        x_ = 0.0;
-        y_ = 0.0; 
+        rendx_ = 0.0;
+        rendy_ = 0.0; 
     }
 
 protected:
-    // Coordinate describing the entities position in relation to the center of the tile its on.
-    float x_ = 0.0, y_ = 0.0;
+    // Positioninate describing the entities position in relation to the center of the tile its on.
+    float rendx_ = 0.0, rendy_ = 0.0;
 
 private:
     static inline size_t next_id_ = 0;
@@ -57,9 +61,3 @@ private:
     }
 
 };
-
-void move(Entity *e, const Direction& dir) {
-    
-    e->tile->enqueue(new Move(e->id, dir));
-    
-}

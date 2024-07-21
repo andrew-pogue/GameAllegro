@@ -53,6 +53,7 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "bitset": "cpp",
-        "forward_list": "cpp"
+        "forward_list": "cpp",
+        "unordered_set": "cpp"
     }
 }

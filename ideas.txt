@@ -29,3 +29,25 @@ make roguelike rpg
 make civilization-like turn-based strategy
 make xcom-like turn-based strategy
 make aoe-like real-time strategy
+
+chunk and tile are internal classes not available to public
+
+requests are made to world
+	then passed down to chunk
+		then passed down to tile
+
+world += request
+world += entity
+
+entities are abstract so need to be stored as base pointers
+requests are abstract so need to be stored as base pointers
+tiles are concrete
+
+tiles store entities via unordered_set
+	tile[id] returns entity
+chunks store tiles via unordered_set
+	chunk[pos] returns tile
+world stores chunks via unordered_set
+	world[coord] returns chunk
+		compares coord to chunk range
+

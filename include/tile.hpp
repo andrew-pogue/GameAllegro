@@ -4,12 +4,16 @@
 #include <unordered_map>
 #include <queue>
 #include "entity.hpp"
-#include "coord.hpp"
+#include "position.hpp"
 
 // An entity that manages other entities?
-struct Tile : Coord {
+struct Tile : Position {
     Tile(int x, int y, int z)
-        : Coord({x, y, z})
+        : Position({x, y, z})
+    {}
+
+    Tile(const Position& pos)
+        : Position(pos)
     {}
 
     ~Tile() {}
@@ -58,7 +62,7 @@ struct Tile : Coord {
         return entity_map_.count(id);
     }
 
-    void enqueue(Request* request) {
+    void add(Request* request) {
         if (!request) return;
         request_queue_.push(std::make_shared<Request>(request));
     }

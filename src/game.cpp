@@ -57,16 +57,14 @@ void Game::play() {
 void Game::load() {
     if (DEBUG) printf("Game::load()\n");
 
-    if (!font_manager_.load_ttf(font_, font_size_)) {
-        throw "Failed to load font\"" + font_ + "\"";
+    if (!font_manager_.load_ttf(font_path_, font_size_)) {
+        throw "Failed to load font \"" + font_path_ + "\"";
     }
 
-    Font font(font_manager_[font_], al_map_rgb(255, 255, 255));
+    tile_list_.push_front({0,0,0});
+    tile_list_.front().add(new Glyph('@'));
 
-    entities_.push_front(new entity::Text("@", Coord(0, 0, 0), font));
-    player_ = entities_.front();
-
-    load_test_unicode_font();
+    // load_test_unicode_font();
     // load_test_player_fov();
 }
 
@@ -74,7 +72,8 @@ void Game::handle_input() {
 
     // if (DEBUG) printf("Game::handle_input(ALLEGRO_EVENT)\n");
     if (keylog_[ALLEGRO_KEY_UP]) {
-        player_->move(0,PLAYER_SPEED,0);
+        player_->act(Move({})))
+         player_-> move(0,PLAYER_SPEED,0);
     }
 
     if (keylog_[ALLEGRO_KEY_DOWN]) {
@@ -143,43 +142,43 @@ void Game::load_test_unicode_font() {
 
         switch (range) {
         case 0:
-            entities_.push_front(new entity::Text("Control 0: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Control 0: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 1:
-            entities_.push_front(new entity::Text("ASCII: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("ASCII: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 2:
-            entities_.push_front(new entity::Text("Control 1: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Control 1: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 3:
-            entities_.push_front(new entity::Text("Latin 1: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Latin 1: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 4:
-            entities_.push_front(new entity::Text("Extended-A: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Extended-A: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 5:
-            entities_.push_front(new entity::Text("Greek: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Greek: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 6:
-            entities_.push_front(new entity::Text("Arrows: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Arrows: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 7:
-            entities_.push_front(new entity::Text("Lines: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Lines: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 8:
-            entities_.push_front(new entity::Text("Blocks: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Blocks: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         case 9:
-            entities_.push_front(new entity::Text("Shapes: ", Coord(x - 275, y, 0),
+            entities_.push_front(new entity::Text("Shapes: ", Position(x - 275, y, 0),
                 Font(font, al_map_rgb(255,255,255), ALLEGRO_ALIGN_LEFT)));
             break;
         }
@@ -189,7 +188,7 @@ void Game::load_test_unicode_font() {
                 r = fabs(sin(ALLEGRO_PI * (i) * 36 /360.0)) * 255.0,
                 g = fabs(sin(ALLEGRO_PI * (i + 12) * 36 /360.0)) * 255.0,
                 b = fabs(sin(ALLEGRO_PI * (i + 24) * 36 /360.0)) * 255.0;
-            entities_.push_front(new entity::Glyph(i, Coord(x, y, 0), Font(font, al_map_rgb(r,g,b))));
+            entities_.push_front(new entity::Glyph(i, Position(x, y, 0), Font(font, al_map_rgb(r,g,b))));
             // al_draw_glyph(font, al_map_rgb(r,g,b), x, y, i);
             x += width * 2;
             if (x > WINDOW_WIDTH / 2) {

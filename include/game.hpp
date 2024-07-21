@@ -40,13 +40,13 @@ private:
     std::string font_path_;
     unsigned short font_size_;
     Entity* player_;
-    std::forward_list<std::forward_list<std::forward_list<Tile>>> tiles_;
+    std::forward_list<Tile> tile_list_;
 
     void load();
     void render();
     void update();
 
-    // Coord adjust_for_rendering(const Coord& coord) const;
+    // Position adjust_for_rendering(const Position& Position) const;
     void render(const Tile& tile) const;
     
     void handle_input();
